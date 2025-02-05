@@ -1,2 +1,1 @@
-# go_programming
-go_lang
+It is about study source of go_lang
