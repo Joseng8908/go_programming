@@ -1,1 +1,1 @@
-It is about study source of go_lang
+IT IS ABOUT MY FOR THE LOVE OF GO
