@@ -8,6 +8,7 @@ type Book struct {
 	Title  string
 	Author string
 	Copies int
+	ID     int
 }
 
 func Buy(b Book) (Book, error) {
@@ -16,4 +17,17 @@ func Buy(b Book) (Book, error) {
 	}
 	b.Copies--
 	return b, nil
+}
+
+func GetAllBooks(catalog []Book) []Book {
+	return catalog
+}
+
+func GetBook(catalog []Book, id int) Book {
+	for _, b := range catalog {
+		if b.ID == id {
+			return b
+		}
+	}
+	return Book{}
 }
