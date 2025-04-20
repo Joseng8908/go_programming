@@ -1,7 +1,7 @@
 package mytypes_test
 
 import (
-	"mytypes"
+	mytypes "exer/mytype"
 	"strings"
 	"testing"
 )
@@ -72,7 +72,7 @@ func TestMyBuilder(t *testing.T) {
 	mb.Contents.WriteString("Gophers!")
 	want := "Hello, Gophers!"
 	got := mb.Contents.String()
-	if want != got{
+	if want != got {
 		t.Errorf("want %q, got %q", want, got)
 	}
 	wantLen := 15
