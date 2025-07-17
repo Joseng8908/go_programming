@@ -1,1 +1,2 @@
-IT IS ABOUT MY 'FOR THE LOVE OF GO'
+'FOR THE LOVE OF GO'
+'The Go Programming Language'
