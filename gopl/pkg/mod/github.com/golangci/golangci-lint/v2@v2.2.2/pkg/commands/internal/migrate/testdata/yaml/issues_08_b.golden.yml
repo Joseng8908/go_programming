@@ -1,4 +1,0 @@
-version: "2"
-issues:
-  max-issues-per-linter: 66
-  uniq-by-line: false

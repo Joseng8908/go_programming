@@ -1,6 +1,0 @@
-version: "2"
-
-linters:
-  settings:
-    inamedparam:
-      skip-single-param: true

@@ -1,8 +1,0 @@
-version: "2"
-issues:
-  new-from-rev: ""
-  new-from-merge-base: ""
-  new-from-patch: ""
-  whole-files: false
-  new: false
-  fix: false
