@@ -1,6 +1,0 @@
-version: "2"
-formatters:
-  settings:
-    gofumpt:
-      module-path: github.com/org/project
-      extra-rules: true

@@ -1,8 +1,0 @@
-version: "2"
-
-linters:
-  settings:
-    godox:
-      keywords:
-        - FIXME
-        - TODO
