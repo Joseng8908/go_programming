@@ -1,6 +1,13 @@
-package popcount
+package main
+
+import "fmt"
 
 var pc [256]byte //000000...으로 자동으로 초기화
+
+func main() {
+	x := uint64(123456789)
+	fmt.Println(PopCount(x))
+}
 
 func init() {
 	for i := range pc {
