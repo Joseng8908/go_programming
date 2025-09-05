@@ -7,15 +7,6 @@ import (
 	"flag"
 	"fmt"
 )
-
-func main() {
-	mystring := "hello"
-	mybytes := []byte(mystring)
-	fmt.Printf("%v\n", mybytes)
-	reverseEncodedUTF8(mybytes)
-	fmt.Printf("%s\n", mystring)
-	fmt.Printf("%v\n", mybytes)
-}
  
 //4.2
 func howManyDiff32(c1, c2 [32]byte) int {
