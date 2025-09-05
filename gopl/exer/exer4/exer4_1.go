@@ -1,4 +1,5 @@
 package main
+//4.1 ~ 4.2
 
 import (
 	"crypto/sha256"
@@ -8,6 +9,36 @@ import (
 )
 
 func main() {
+	mystring := "hello"
+	mybytes := []byte(mystring)
+	fmt.Printf("%v\n", mybytes)
+	reverseEncodedUTF8(mybytes)
+	fmt.Printf("%s\n", mystring)
+	fmt.Printf("%v\n", mybytes)
+}
+ 
+//4.2
+func howManyDiff32(c1, c2 [32]byte) int {
+	sum := 0
+	for i := 0; i < 32; i++ {
+		result := c1[i] ^ c2[i]
+		sum += PopCount(result)
+	}
+	return sum
+
+}
+
+func howManyDiff64(c1, c2 [64]byte) int {
+	sum := 0
+	for i := 0; i < 64; i++ {
+		result := c1[i] ^ c2[i]
+		sum += PopCount(result)
+	}
+	return sum
+
+}
+
+func init() {
 
 	hashFlag256 := flag.Bool("sha256", false, "hash algorithm (ex.sha256)")
 	hashFlag512 := flag.Bool("sha512", false, "hash algorithm (ex.sha512)")
@@ -32,27 +63,7 @@ func main() {
 		fmt.Println("please write flag")
 	}
 }
-
-func howManyDiff32(c1, c2 [32]byte) int {
-	sum := 0
-	for i := 0; i < 32; i++ {
-		result := c1[i] ^ c2[i]
-		sum += PopCount(result)
-	}
-	return sum
-
-}
-
-func howManyDiff64(c1, c2 [64]byte) int {
-	sum := 0
-	for i := 0; i < 64; i++ {
-		result := c1[i] ^ c2[i]
-		sum += PopCount(result)
-	}
-	return sum
-
-}
-
+//4.1
 func PopCount(b byte) int {
 	count := 0
 	for b != 0 {
