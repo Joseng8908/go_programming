@@ -1,5 +1,25 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+# =================
+# JetBrains IDE
+# =================
+# User-specific stuff
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+.idea/vcs.xml  # 로컬 VCS 설정
+
+# Sensitive or machine-specific information
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+
+# Project-specific files that should not be committed
+.idea/go_programming.iml # 모듈 파일은 보통 공유하지 않음
+.idea/modules.xml
+
+# =================
+# Go
+# =================
 #
 # Binaries for programs and plugins
 *.exe
