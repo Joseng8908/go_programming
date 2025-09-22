@@ -1,5 +1,5 @@
-package exer5
+package main
 
 func main() {
-	Outline()
+	exer5_10()
 }

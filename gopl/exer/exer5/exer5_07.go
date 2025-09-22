@@ -1,4 +1,4 @@
-package exer5
+package main
 
 import (
 	"fmt"
@@ -16,15 +16,15 @@ func Outline() {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
-	forEachNode(doc, startElement, endElement)
+	forEachNodeV1(doc, startElement, endElement)
 }
-func forEachNode(n *html.Node, pre, post func(*html.Node)) {
+func forEachNodeV1(n *html.Node, pre, post func(*html.Node)) {
 	if pre != nil {
 		pre(n)
 	}
 
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		forEachNode(c, pre, post)
+		forEachNodeV1(c, pre, post)
 	}
 
 	if post != nil {

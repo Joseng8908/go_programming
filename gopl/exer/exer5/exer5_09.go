@@ -1,4 +1,4 @@
-package exer5
+package main
 
 import "strings"
 
