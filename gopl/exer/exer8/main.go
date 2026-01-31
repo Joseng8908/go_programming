@@ -1,10 +1,10 @@
 package exer8
 
-import(
+import (
+	"flag"
+	"fmt"
 	"log"
 	"net"
-	"flag"
-	"os"
 )
 
 func main() {
@@ -12,8 +12,7 @@ func main() {
 	portPtr := flag.Int("port", 0, "an int")
 	flag.Parse()
 
-
-	listener, err := net.Listen("tcp", "localhost:%d")
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *portPtr))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,4 +24,4 @@ func main() {
 		}
 		go handleConn(conn)
 	}
-}		
+}

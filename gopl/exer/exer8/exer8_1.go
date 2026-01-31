@@ -5,9 +5,9 @@ import (
 	"net"
 	"time"
 )
-	
+
 func handleConn(c net.Conn) {
-	defer c.Close() 
+	defer c.Close()
 	for {
 		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
 		if err != nil {
@@ -16,5 +16,3 @@ func handleConn(c net.Conn) {
 		time.Sleep(1 * time.Second)
 	}
 }
-
-
