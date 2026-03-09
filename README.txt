@@ -24,6 +24,6 @@ Go를 활용한 마이크로 컨테이너 구현
 
 ## 참고 자료
 
-- 교재: "The Go Programming Language" (Alan Donovan, Brian Kernighan), For The Love of Go(John Arundel)
+- 교재: "The Go Programming Language" (Alan Donovan, Brian Kernighan), "For The Love of Go"(John Arundel)
 - 언어: Go 1.xx
 - 컴파일러: Go compiler
