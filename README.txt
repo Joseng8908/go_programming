@@ -1,29 +1,29 @@
 'FOR THE LOVE OF GO'
 'The Go Programming Language'
 
-Go 프로그래밍 학습 저장소. "C Programming: A Modern Approach" 교재를 기반함.
+Go 프로그래밍 학습 저장소. "The Go Programming Language"와 "For The Love of Go" 교재를 기반함.
+Effective GO 도 할 예정
 
 ## 폴더 구조
 
 ### `/algorithm`
-- **search.c** : 검색 알고리즘 구현 (선형 탐색, 이진 탐색 등)
-- **sort.c** : 정렬 알고리즘 구현 (버블 정렬, 퀵 정렬 등)
 
-### `/knking`
-K.N. King 교재의 예제 및 연습 프로그램들
+### `/ftlog`
+"For The Love of Go" 기반 학습 프로젝트
+Go 기초부터 실전까지의 다양한 학습 프로젝트들
 
-### `/Projects`
-교과서 챕터별 프로젝트 및 실습 문제
+### `/gopl`
+"The Go Programming Language" 교재 기반의 예제 및 연습 문제
 
-### `/Exercises`
-각 챕터별 연습 문제 및 과제
+### `/go-concurrency-lab`
+Go 동시성 프로그래밍 학습 자료
 
-### `/Q&A`
-질문과 답변, 추가 학습 자료
+### `/micro_container`
+Go를 활용한 마이크로 컨테이너 구현
 
 
 ## 참고 자료
 
-- 교재: "C Programming: A Modern Approach" (K.N. King)
-- C 표준: C99/C11
-- 컴파일러: GCC
+- 교재: "The Go Programming Language" (Alan Donovan, Brian Kernighan), For The Love of Go(John Arundel)
+- 언어: Go 1.xx
+- 컴파일러: Go compiler
