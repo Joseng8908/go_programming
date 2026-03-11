@@ -17,7 +17,7 @@ func main() {
 	cmd := os.Args[1]
 	args := os.Args[2:]
 
-	fmt.Printf("새로운 컨테이너 생성중,,,%s", cmd)
+	fmt.Printf("새로운 컨테이너 생성중,,,%s\n", cmd)
 
 	// 컨테이너 생성
 	c := container.NewContainer("1", cmd, args...)

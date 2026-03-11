@@ -1,8 +1,9 @@
 package container
 
 import (
-	"fmt"
 	"context"
+	"fmt"
+	"os"
 	"os/exec"
 	"syscall"
 )
@@ -21,6 +22,12 @@ type Container struct {
 func NewContainer(id string, command string, args ...string) *Container {
 	// 여기서 커맨드가 실행 되겠죠?, 즉 여기서 컨테이너가 만들어지는 거임
 	cmd := exec.Command(command, args...)
+
+	// 만들어진 cmd객체의 표준 입출력을, 터미널과 연결
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	// 그럼 만들어졌다고 여기서 context 보내기
 	ctx, cancel := context.WithCancel(context.Background())
 	// 격리 설정..., 보통 exec를 통해 새로운 프로세스를 만들면
@@ -33,6 +40,7 @@ func NewContainer(id string, command string, args ...string) *Container {
 					syscall.CLONE_NEWPID | // PID 격리(내부에서 PID 1번이 됨)
 					syscall.CLONE_NEWNS, // 마운트 격리
 	}
+	fmt.Println(cmd.SysProcAttr)
 
 	// container에 대한 정보 객체 반환 
 	return &Container{
@@ -53,5 +61,12 @@ func (c *Container) Start() error {
 	// 확인용 print
 	fmt.Printf("컨테이너 ID: %s, PID: %d 로 실행됨\n", c.ID, c.Cmd.Process.Pid)
 
+	return nil
+}
+
+// 파일 시스템 변경 method
+func (c *Container) setupRootFS() error {
+	syscall.Chroot("./rootfs")
+	os.Chdir("/")
 	return nil
 }
