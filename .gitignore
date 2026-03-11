@@ -43,3 +43,10 @@ go.work.sum
 
 # env file
 .env
+
+# linux file
+rootfs/
+
+# compact files
+*.tar.gz
+*.tar
