@@ -39,7 +39,7 @@ func NewContainer(id string, command string, args ...string) *Container {
 		Cloneflags: syscall.CLONE_NEWUTS | // 호스트 명 격리
 					syscall.CLONE_NEWPID | // PID 격리(내부에서 PID 1번이 됨)
 					syscall.CLONE_NEWNS, // 마운트 격리
-		Chroot: "./roofs", // 이게 컨테이너(격리된 프로세스의 입구)
+		Chroot: "./rootfs", // 이게 컨테이너(격리된 프로세스의 입구)
 	}
 	cmd.Dir = "/" // 프로세스가 시작될 위치를 컨테이너 내부의 루트로 고정하기
 
@@ -65,9 +65,4 @@ func (c *Container) Start() error {
 	return nil
 }
 
-// 파일 시스템 변경 method
-func (c *Container) setupRootFS() error {
-	syscall.Chroot("./rootfs")
-	os.Chdir("/")
-	return nil
-}
+
