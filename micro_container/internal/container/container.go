@@ -2,21 +2,12 @@ package container
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
 )
 
-// container 정의
-// export로
-type Container struct {
-	ID string
-	Cmd *exec.Cmd
-	Status string
-	Ctx context.Context
-	Cancel context.CancelFunc
-}
+
 
 // 새로운 container instance를 생성하는 생성자
 func NewContainer(id string, command string, args ...string) *Container {
@@ -51,18 +42,6 @@ func NewContainer(id string, command string, args ...string) *Container {
 		Ctx: ctx, 
 		Cancel: cancel,
 	}
-}
-
-// 컨테이너 프로세스 실행 로직
-func (c *Container) Start() error {
-	if err := c.Cmd.Start(); err != nil {
-		return err
-	}
-
-	// 확인용 print
-	fmt.Printf("컨테이너 ID: %s, PID: %d 로 실행됨\n", c.ID, c.Cmd.Process.Pid)
-
-	return nil
 }
 
 
