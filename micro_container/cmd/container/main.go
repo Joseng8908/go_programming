@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	//"micro_container/internal/cgroups"
+	"micro_container/internal/cgroups"
 	"micro_container/internal/container"
 )
 
@@ -29,9 +29,16 @@ func main() {
 		return
 	}
 
+	// cgroup 설정하기
+	cgroups.SetCgroup("1", c.Cmd.Process.Pid)
+
+	// 컨테이너 끝날때까지 기다리고, 끝나면 삭제하기
+	defer cgroups.RemoveCgroup("1")
+
 	// 프로세스 대기
-	// 커테이너 프로세스각 끝나야 끝남
+	// 컨테이너 프로세스각 끝나야 끝남
 	err := c.Cmd.Wait()
+
 	if err != nil {
 		fmt.Printf("컨테이너가 에러남: %v\n", err)
 	} else {
