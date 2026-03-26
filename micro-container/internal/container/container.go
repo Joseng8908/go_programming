@@ -1,13 +1,12 @@
 package container
 
+// "child 로직이 들어갈 예정"
 import (
 	"context"
 	"os"
 	"os/exec"
 	"syscall"
 )
-
-
 
 // 새로운 container instance를 생성하는 생성자
 func NewContainer(id string, command string, args ...string) *Container {
