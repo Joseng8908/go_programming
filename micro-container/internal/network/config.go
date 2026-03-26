@@ -29,7 +29,7 @@ func ConfigureContainerNetwork(pid int) error {
 	defer netns.Set(origns)
 
 	// 컨테이너 안에서 세팅하기
-	eth0, err := netlink.LinkByName("eth0")
+	eth0, err := netlink.LinkByName("eth0-temp")
 	if err != nil {
 		return err
 	}

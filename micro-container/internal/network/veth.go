@@ -10,8 +10,8 @@ import (
 func SetupVeth(pid int, bridgeName string) error {
 	// 호스트쪽 랜선? 이름 정의
 	hostVethName := fmt.Sprintf("veth%d", pid)
-	// 컨테이너 쪽에서는 eth0으로 보이게 정의
-	containerVethName := "eth0" 
+	// 컨테이너 쪽에서는 eth0-temp으로 보이게 정의
+	containerVethName := "eth0-temp" 
 
 	// veth 쌍 설정하기,,,,
 	veth := &netlink.Veth{
@@ -44,6 +44,8 @@ func SetupVeth(pid int, bridgeName string) error {
 	if err := netlink.LinkSetNsPid(peer, pid); err != nil {
 		return fmt.Errorf("네임스페이스로 이동 실패: %v", err)
 	}
+
+	fmt.Printf("log: %s 장치를 PID %d로 이동 완료\n", containerVethName, pid)
 
 	return nil
 
