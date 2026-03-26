@@ -60,9 +60,9 @@ func TestSetupVeth(t *testing.T) {
 
 		// 검증 3: 컨테이너 쪽 veth(eth0)가 호스트에서 사라졌는지 확인
 		// (네임스페이스를 이동했다면 호스트의 기본 네임스페이스에서는 조회되지 않아야 함)
-		_, err = netlink.LinkByName("eth0-temp")
+		_, err = netlink.LinkByName("eth0")
 		if err == nil {
-			t.Error("eth0-temp가 여전히 호스트 네임스페이스에 존재합니다. 이동 실패!")
+			t.Error("eth0가 여전히 호스트 네임스페이스에 존재합니다. 이동 실패!")
 		}
 	})
 }
