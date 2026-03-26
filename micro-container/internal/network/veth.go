@@ -1,31 +1,50 @@
 package network
 
 import (
-	"strconv"
+	"fmt"
+
 	"github.com/vishvananda/netlink"
 )
 
-func SetupNetwork(pid int) error {
-	// veth pair 이름 정의하기
-	hostVethName := "veth-host-" + strconv.Itoa(pid)
-	containerVethName := "eth0" // 컨테이너 안에서는 이더넷처럼 행동하므로 이더넷을 붙임
-	
-	// veth pair 생성하기, link add 하는거임
+func SetupVeth(pid int, bridgeName string) error {
+	// 호스트쪽 랜선? 이름 정의
+	hostVethName := fmt.Sprintf("veth%d", pid)
+	// 컨테이너 쪽에서는 eth0으로 보이게 정의
+	containerVethName := "eth0" 
+
+	// veth 쌍 설정하기,,,,
 	veth := &netlink.Veth{
 		LinkAttrs: netlink.LinkAttrs{Name: hostVethName},
 		PeerName: containerVethName,
 	}
-	netlink.LinkAdd(veth)
 
-	// 컨테이너 쪽 랜선을 네임스페이스로 이동시키기, link set하는거임
-	peer, _ := netlink.LinkByName(containerVethName)
-	netlink.LinkSetNsPid(peer, pid)
+	// 커널에 랜선 만들자고 요청하기
+	if err := netlink.LinkAdd(veth); err != nil {
+		return fmt.Errorf("veth 생성 실패: %v", err)
+	}
 
-	// 호스토 쪽 설정하기, ip부여하고 up시키기
+	// 브릿지에 끼울 랜선 가져오기
 	hostVeth, _ := netlink.LinkByName(hostVethName)
-	addr, _ := netlink.ParseAddr("172.17.0.1/24") //이러면 안되는거 아닌가?
-	netlink.AddrAdd(hostVeth, addr)
-	netlink.LinkSetUp(hostVeth)
+	// 브릿지 장치 가져오기
+	br, _ := netlink.LinkByName(bridgeName)
+
+	// 호스트쪽 랜선 활성화 (UP시키기)
+	if err := netlink.LinkSetMaster(hostVeth, br); err != nil {
+		return fmt.Errorf("브릿지 쪽 veth 활성화 실패: %v", err)
+	}
+
+	// 컨테이너에 끼울 랜선 가져오기
+	peer, err := netlink.LinkByName(containerVethName)
+	if err != nil {
+		return fmt.Errorf("컨테이너 veth 찾기 실패: %v", err)
+	}
+
+	// 컨테이너의 네임스페이스로 이동
+	if err := netlink.LinkSetNsPid(peer, pid); err != nil {
+		return fmt.Errorf("네임스페이스로 이동 실패: %v", err)
+	}
 
 	return nil
+
+
 }
