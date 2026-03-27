@@ -34,6 +34,11 @@ func SetupVeth(pid int, bridgeName string) error {
 		return fmt.Errorf("브릿지 쪽 veth 활성화 실패: %v", err)
 	}
 
+	// 호스트 쪽 남아있는 vetHost UP시키기
+	if err := netlink.LinkSetUp(hostVeth); err != nil {
+		return fmt.Errorf("호스트 veth 활성화 실패: %v", err)
+	}
+
 	// 컨테이너에 끼울 랜선 가져오기
 	peer, err := netlink.LinkByName(containerVethName)
 	if err != nil {

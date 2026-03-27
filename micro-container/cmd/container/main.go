@@ -2,46 +2,60 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"micro-container/internal/cgroups"
+	"log"
 	"micro-container/internal/container"
+	"os"
+	"os/exec"
+	"syscall"
 )
 
+
 func main() {
-	// 사용법 설명: go run main.go <command> <args...>
-	// ex) go run main.go /bin/sh
+	// 사용법
 	if len(os.Args) < 2 {
-		fmt.Println("사용법: go run main.go <command>")
+		log.Fatal("사용법: ./micro-container <commands>, [run | child] [args...]")
 		return
 	}
 
-	cmd := os.Args[1]
-	args := os.Args[2:]
+	switch os.Args[1] {
+	case "run": run()
+	
+	case "child": child()
 
-	fmt.Printf("새로운 컨테이너 생성중,,,%s\n", cmd)
-
-	// 컨테이너 생성
-	c := container.NewContainer("1", cmd, args...)
-
-	// 컨테이너 실행
-	if err := c.Start(); err != nil {
-		fmt.Printf("컨테이너 실행 실패: %v\n", err)
-		return
+	default: log.Fatal("알 수 없는 명령어")
+	
 	}
+}
 
-	// cgroup 설정하기
-	cgroups.SetCgroup("1", c.Cmd.Process.Pid)
+func run() {
+	fmt.Printf("부모 프로세스 시작(PID: %d)\n", os.Getgid())
 
-	// 컨테이너 끝날때까지 기다리고, 끝나면 삭제하기
-	defer cgroups.RemoveCgroup("1")
+	// 자기 자신을 child 인자에 붙이고 실행할 준비
+	// os.Args[2:]는 사용자가 입력한 명령어 (ex) /bin/sh)ㅏ
+	args := append([]string{"child"}, os.Args[2:]...)
+	cmd := exec.Command("/proc/self/exe", args...)
 
-	// 프로세스 대기
-	// 컨테이너 프로세스각 끝나야 끝남
-	err := c.Cmd.Wait()
+	// 격리된 네임스페이스 설정하기
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Cloneflags: syscall.CLONE_NEWNET | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWUTS,
+	}
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
-	if err != nil {
-		fmt.Printf("컨테이너가 에러남: %v\n", err)
-	} else {
-		fmt.Println("컨테이너 종료")
+	c := &container.Container{
+		ID: "test-container",
+		Cmd: cmd,
+	}
+	 if err := c.Run(); err != nil {
+		fmt.Printf("부모 에러: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func child() {
+	if err := container.Child(os.Args[2:]); err != nil {
+		fmt.Printf("자식 에러: %v\n", err)
+		os.Exit(1)
 	}
 }
