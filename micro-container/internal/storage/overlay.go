@@ -8,21 +8,22 @@ import (
 
 func MountOverlay(containerID string) (string, error) {
 	// 필요한 폴더 경로 설정하기
-	basePath := fmt.Sprint("/tmp/micro-docker/%s", containerID)
+	basePath := fmt.Sprintf("./tmp/%s", containerID)
 	lowerDir := "./rootfs" //원본 이미지(ReadOnly)
 	uppderDir := basePath + "/upper"
 	workDir := basePath + "/work"
-	mergedDir := basePath + "merged"
+	mergedDir := basePath + "/merged"
 
 	// 폴더 생성하기
 	for _, dir := range []string{uppderDir, workDir, mergedDir} {
-		if err := os.Mkdir(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
 			return "", err
 		}
 	}
+	fmt.Print("폴더 생성 완료")
 
 	// 마운트 옵션 문자열 생서하기
-	opts := fmt.Sprint("lowerdir=%s,upperdir%s,workdir=%s", lowerDir, uppderDir, workDir)
+	opts := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s", lowerDir, uppderDir, workDir)
 	
 	// syscall.Moun호출하기
 	// 형식: syscall.Mount(source, target, fstype, flags, data)
@@ -34,8 +35,8 @@ func MountOverlay(containerID string) (string, error) {
 }
 
 func UnmountOverlay(containerID string) error {
-	mergedDir := fmt.Sprintf("/tmp/micro-docker/%s/merged", containerID)
-	basePath := fmt.Sprint("/tmp/micro-docker/%s", containerID)
+	mergedDir := fmt.Sprintf("/tmp/%s/merged", containerID)
+	basePath := fmt.Sprintf("/tmp/%s", containerID)
 
 	// 마운트 해제하기
 	if err := syscall.Unmount(mergedDir, 0); err != nil {

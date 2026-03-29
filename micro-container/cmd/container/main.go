@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"micro-container/internal/container"
+	"micro-container/internal/storage"
 	"os"
 	"os/exec"
 	"syscall"
@@ -47,7 +48,16 @@ func run() {
 		ID: "test-container",
 		Cmd: cmd,
 	}
-	 if err := c.Run(); err != nil {
+
+	// 마운트 하기
+	_, err := storage.MountOverlay(c.ID)
+	if err != nil {
+		fmt.Printf("마운트 에러: %v\n", err)
+	}
+	fmt.Println("마운트 완료")
+	defer storage.UnmountOverlay(c.ID)
+
+	if err := c.Run(); err != nil {
 		fmt.Printf("부모 에러: %v\n", err)
 		os.Exit(1)
 	}
