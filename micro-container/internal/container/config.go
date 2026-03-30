@@ -2,6 +2,7 @@ package container
 
 import (
 	"context"
+	"os"
 	"os/exec"
 )
 
@@ -13,4 +14,5 @@ type Container struct {
 	Status string
 	Ctx context.Context
 	Cancel context.CancelFunc
+	SyncPipe *os.File 
 }

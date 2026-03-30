@@ -4,10 +4,18 @@ import (
 	"fmt"
 	"micro-container/internal/cgroups"
 	"micro-container/internal/network"
+	"micro-container/internal/storage"
 )
 
 // 컨테이너 프로세스 실행 로직
 func (c *Container) Run() error {
+	// 마운트 하기
+	if _, err := storage.MountOverlay(c.ID); err != nil {
+		fmt.Printf("마운트 에러: %v\n", err)
+	}
+	fmt.Println("마운트 완료")
+	defer storage.UnmountOverlay(c.ID)
+
 	// 브릿지 이름 생성하고, 브릿지 만들기
 	bridgeName := "mybridge"
 	network.GetOrCreateBridge(bridgeName)
@@ -26,6 +34,11 @@ func (c *Container) Run() error {
 	if err := network.SetupVeth(c.Cmd.Process.Pid, bridgeName); err != nil {
 		return fmt.Errorf("Veth 설정 실패: %v", err)
 	}
+
+	// 부모 설정 끝, 자식에게 신호 보내기
+	fmt.Println("부모: 모든 설정 완료. 자식에게 신호를 보냅니다.")
+	c.SyncPipe.Write([]byte("go"))
+	c.SyncPipe.Close()
 
 	// 컨테이너 프로세스가 끝날때까지 대기하기
 	err := c.Cmd.Wait()

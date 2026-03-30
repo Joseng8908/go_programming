@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"micro-container/internal/container"
-	"micro-container/internal/storage"
 	"os"
 	"os/exec"
 	"syscall"
@@ -36,6 +35,10 @@ func run() {
 	args := append([]string{"child"}, os.Args[2:]...)
 	cmd := exec.Command("/proc/self/exe", args...)
 
+	fmt.Println("파이프라인 구축...")
+	r, w, _ := os.Pipe()
+	cmd.ExtraFiles = []*os.File{r}
+	
 	// 격리된 네임스페이스 설정하기
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWNET | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWUTS,
@@ -47,15 +50,8 @@ func run() {
 	c := &container.Container{
 		ID: "test-container",
 		Cmd: cmd,
+		SyncPipe: w,
 	}
-
-	// 마운트 하기
-	_, err := storage.MountOverlay(c.ID)
-	if err != nil {
-		fmt.Printf("마운트 에러: %v\n", err)
-	}
-	fmt.Println("마운트 완료")
-	defer storage.UnmountOverlay(c.ID)
 
 	if err := c.Run(); err != nil {
 		fmt.Printf("부모 에러: %v\n", err)
@@ -64,6 +60,15 @@ func run() {
 }
 
 func child() {
+	pipe := os.NewFile(3, "pipe")
+	if pipe == nil {
+		os.Exit(1)
+	}
+
+	msg := make([]byte, 2)
+	pipe.Read(msg)
+	pipe.Close()
+
 	if err := container.Child(os.Args[2:]); err != nil {
 		fmt.Printf("자식 에러: %v\n", err)
 		os.Exit(1)
