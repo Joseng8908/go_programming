@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"syscall"
+	"time"
 )
 
 func MountOverlay(containerID string) (string, error) {
@@ -35,13 +36,16 @@ func MountOverlay(containerID string) (string, error) {
 }
 
 func UnmountOverlay(containerID string) error {
-	mergedDir := fmt.Sprintf("/tmp/%s/merged", containerID)
-	basePath := fmt.Sprintf("/tmp/%s", containerID)
+	mergedDir := fmt.Sprintf("./tmp/%s/merged", containerID)
+	basePath := fmt.Sprintf("./tmp/%s", containerID)
 
 	// 마운트 해제하기
 	if err := syscall.Unmount(mergedDir, 0); err != nil {
 		return fmt.Errorf("마운트 해제 실패: %v", err)
 	}
+
+	// 언마운트 시간 벌기
+	time.Sleep(100 * time.Millisecond)
 
 	// 임시 폴더 삭제(upper, work, merged가 담긴 부모 폴더를 그냥 삭제해버리기)
 	return os.RemoveAll(basePath)
