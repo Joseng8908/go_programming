@@ -5,7 +5,6 @@ import (
 	"micro-container/internal/network"
 	"os"
 	"syscall"
-	"time"
 )
 
 func Child(args []string) error { 
@@ -20,8 +19,6 @@ func Child(args []string) error {
 		return fmt.Errorf("proc 마운트 실패: %v", err)
 	}
 
-	// 부모가 veth형성하고 UP시킬때까지 기다리기
-	time.Sleep(100 * time.Millisecond)
 	// 호스트 네임 설정하기
 	if err := syscall.Sethostname([]byte("micro-container")); err != nil {
 		return fmt.Errorf("호스트 네임 설정 실패: %v", err)

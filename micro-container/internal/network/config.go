@@ -2,7 +2,6 @@ package network
 
 import (
 	"fmt"
-	"time"
 	"github.com/vishvananda/netlink"
 )
 
@@ -13,15 +12,7 @@ func ConfigureContainerNetwork(ifaceName string) error {
 	var eth0 netlink.Link
     var err error
 
-    // 최대 5번 재시도 (부모가 선을 던져줄 때까지 대기)
-    for i := 0; i < 5; i++ {
-        eth0, err = netlink.LinkByName(ifaceName)
-        if err == nil {
-            break
-        }
-        fmt.Printf("장치 %s 대기 중... (%d/5)\n", ifaceName, i+1)
-        time.Sleep(100 * time.Millisecond)
-    }
+    eth0, err = netlink.LinkByName(ifaceName)
 
     if err != nil {
         return fmt.Errorf("결국 장치를 찾지 못했습니다: %v", err)
