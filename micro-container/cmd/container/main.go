@@ -24,17 +24,30 @@ func main() {
 
 	case "ps": ListContainers()
 
+	case "exec": myExec(os.Args)
+
+	case "nsenter":	container.NsEnter()
+	
+	case "stop" : stop()
+
 	default: log.Fatal("알 수 없는 명령어")
 	
 	}
 }
 
 func run() {
-	fmt.Printf("부모 프로세스 시작(PID: %d)\n", os.Getgid())
+	detach := false
+	commandIdx := 2
+
+	if len(os.Args) > 2 && os.Args[2] == "-d" {
+		detach = true
+		commandIdx = 3
+	}
+	fmt.Printf("로그: 부모 프로세스 시작(PID: %d), (Detach: %v)\n", os.Getgid(), detach)
 
 	// 자기 자신을 child 인자에 붙이고 실행할 준비
 	// os.Args[2:]는 사용자가 입력한 명령어 (ex) /bin/sh)ㅏ
-	args := append([]string{"child"}, os.Args[2:]...)
+	args := append([]string{"child"}, os.Args[commandIdx:]...)
 	cmd := exec.Command("/proc/self/exe", args...)
 
 	fmt.Println("로그: 파이프라인 구축...")
@@ -45,9 +58,11 @@ func run() {
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWNET | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWUTS,
 	}
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if !detach {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
 	c := &container.Container{
 		ID: "test-container",
@@ -55,7 +70,7 @@ func run() {
 		SyncPipe: w,
 	}
 
-	if err := c.Run(); err != nil {
+	if err := c.Run(detach); err != nil {
 		fmt.Printf("로그: 부모 에러: %v\n", err)
 		os.Exit(1)
 	}
@@ -96,5 +111,42 @@ func ListContainers() {
 		item.Command,
 		item.CreateTime.Format("2026-03-31 16:47:05"),
 		)
+	}
+}
+
+func myExec(args []string) {
+	if len(args) < 4 {
+			fmt.Println("사용법: exec [컨테이너ID] [명령어]")
+			return
+		}
+	containerID := args[2]
+	command := args[3]
+
+	// 저장된 정보 가져오기
+	info, err := container.ReadContainerInfo(containerID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// nsenter기능하는 자식 프로세스 실행
+	cmd := exec.Command("/proc/self/exe", "nsenter")
+	cmd.Env = append(os.Environ(), fmt.Sprintf("target_pid=%d", info.Pid),
+	fmt.Sprintf("target_cmd=%s", command))
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("로그: 컨테이너 접속 실패: %v\n", err)
+	}
+} 
+
+func stop() {
+	if len(os.Args) < 3 {
+		log.Fatal("사용법: stop [컨테이너ID]")
+	}
+	containerID := os.Args[2]
+	if err := container.StopContainer(containerID); err != nil {
+		log.Fatalf("로그: 멈추기 실패: %v", err)
 	}
 }

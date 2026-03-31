@@ -10,13 +10,12 @@ import (
 )
 
 // 컨테이너 프로세스 실행 로직
-func (c *Container) Run() error {
+func (c *Container) Run(detach bool) error {
 	// 마운트 하기
 	if _, err := storage.MountOverlay(c.ID); err != nil {
 		fmt.Printf("마운트 에러: %v\n", err)
 	}
 	fmt.Println("마운트 완료")
-	defer storage.UnmountOverlay(c.ID)
 
 	// 브릿지 이름 생성하고, 브릿지 만들기
 	bridgeName := "mybridge"
@@ -29,7 +28,6 @@ func (c *Container) Run() error {
 
 	// cgroup관련 파일 만들고, cgroup지우는거 defer로 확정하기
 	cgroups.SetCgroup(c.ID, pid)
-	defer cgroups.RemoveCgroup(c.ID)
 
 	// Veth세팅하고, 호스트(브릿지 쪽 올리기)
 	// 아직 컨테이너 쪽은 모름
@@ -55,6 +53,15 @@ func (c *Container) Run() error {
 	c.SyncPipe.Write([]byte("go"))
 	c.SyncPipe.Close()
 
+	// 백그라운드 설정이 on이면 이렇게 실행
+	if detach {
+		fmt.Printf("로그: 컨테이너 %s를 백그라운드로 전환합니다.\n", c.ID)
+		return nil
+	}
+
+	defer storage.UnmountOverlay(c.ID)
+	defer cgroups.RemoveCgroup(c.ID)
+	
 	// 컨테이너 프로세스가 끝날때까지 대기하기
 	err := c.Cmd.Wait()
 	if err != nil {

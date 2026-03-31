@@ -32,20 +32,4 @@
             - veth.go # 랜선 만들고, 호스트 연결하기
 ```
 
-### main.go
-~~~
-func main() {
-    switch os.Args[1] {
-    case "run":
-        // 1단계: 브릿지/Cgroup 준비
-        // 2단계: cmd.Start()로 격리된 'child' 실행
-        // 3단계: PID 나왔으니 veth 연결 (SetupVeth)
-        // 4단계: cmd.Wait()로 자식 종료 대기
-        
-    case "child":
-        // 4단계: 방 안에서 할 일 (Hostname 설정, 네트워크 Configure)
-        // 마지막: syscall.Exec("/bin/bash", ...)
-    }
-}
-~~~
 
