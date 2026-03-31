@@ -24,6 +24,7 @@ const InfoLocation = "/var/lib/micro-container/containers"
 
 func WriteContainerInfo(info *ContainerInfo) error {
 	// 저장할 폴더 경로 생성하기
+	fmt.Println("로그: json폴더 경로 및 파일 생성중...")
 	dirPath := filepath.Join(InfoLocation, info.ID)
 	if err := os.MkdirAll(dirPath, 0755); err != nil {
 		return fmt.Errorf("정보 저장 폴더 생성 실패...: %v", err)

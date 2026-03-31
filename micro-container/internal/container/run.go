@@ -2,9 +2,11 @@ package container
 
 import (
 	"fmt"
+	"log"
 	"micro-container/internal/cgroups"
 	"micro-container/internal/network"
 	"micro-container/internal/storage"
+	"time"
 )
 
 // 컨테이너 프로세스 실행 로직
@@ -34,6 +36,19 @@ func (c *Container) Run() error {
 	if err := network.SetupVeth(c.Cmd.Process.Pid, bridgeName); err != nil {
 		return fmt.Errorf("Veth 설정 실패: %v", err)
 	}
+
+	info := ContainerInfo{
+		ID: c.ID,
+		Pid: c.Cmd.Process.Pid,
+		Command: "/bin/sh",
+		CreateTime: time.Now(),
+		Status: "running",
+	}
+
+	if err := WriteContainerInfo(&info); err != nil {
+		log.Printf("로그: 컨테이너 정보 기록 실패: %v", err)
+	}
+
 
 	// 부모 설정 끝, 자식에게 신호 보내기
 	fmt.Println("부모: 모든 설정 완료. 자식에게 신호를 보냅니다.")
