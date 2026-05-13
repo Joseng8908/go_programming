@@ -12,7 +12,7 @@ package container
 __attribute__((constructor)) void enter_namespace() {
     // 1. 환경변수에서 대상 PID와 실행할 명령어를 가져옴
     char *pid = getenv("target_pid");
-    char *cmd = getenv("target_cmd");
+    char *cmd = getenv("target_cmd")
     
     // exec 명령어가 아닐 때는 그냥 통과 (run, ps 등)
     if (!pid || !cmd) return;
